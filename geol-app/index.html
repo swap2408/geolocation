@@ -10,7 +10,6 @@ function sendDetails() {
     navigator.geolocation.getCurrentPosition(function (position) {
 
       const deviceDetails = {
-        userAgent: navigator.userAgent,
         language: navigator.language,
         platform: navigator.platform,
         vendor: navigator.vendor,
@@ -26,7 +25,7 @@ function sendDetails() {
         body: JSON.stringify(deviceDetails)
       });
 
-      console.log("Sent:", "long: "deviceDetails.longitude," lat: ",deviceDetails.latitude);
+      console.log("long: ",deviceDetails.longitude," lat: ",deviceDetails.latitude);
     });
   } else {
     alert("Geolocation not supported");
