@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Geo Test</title>
+</head>
+<body>
+
+<h2>Click to Send Location</h2>
+<button onclick="sendDetails()">Send Data</button>
+
+<script>
+function sendDetails() {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(function (position) {
+
+      const deviceDetails = {
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        platform: navigator.platform,
+        vendor: navigator.vendor,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      };
+
+      fetch("https://YOUR-RENDER-URL.onrender.com/collect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(deviceDetails)
+      });
+
+      console.log("Sent:", deviceDetails);
+    });
+  } else {
+    alert("Geolocation not supported");
+  }
+}
+</script>
+
+</body>
+</html>
