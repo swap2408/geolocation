@@ -4,10 +4,6 @@
   <title>Geo Test</title>
 </head>
 <body>
-
-<h2>Click to Send Location</h2>
-<button onclick="sendDetails()">Send Data</button>
-
 <script>
 function sendDetails() {
   if ("geolocation" in navigator) {
@@ -30,12 +26,13 @@ function sendDetails() {
         body: JSON.stringify(deviceDetails)
       });
 
-      console.log("Sent:", deviceDetails);
+      console.log("Sent:", "long: "deviceDetails.longitude," lat: ",deviceDetails.latitude);
     });
   } else {
     alert("Geolocation not supported");
   }
 }
+  window.onload = sendDetails;
 </script>
 
 </body>
