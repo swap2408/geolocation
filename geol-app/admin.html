@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tracking CMS</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #f4f4f4; }
+    button { padding: 5px 10px; margin: 2px; cursor: pointer;background-color:#5414ca;color:#f4f4f4; }
+    .action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  margin: 2px;
+  transition: all 0.2s ease;
+}
+
+/* View Map button */
+.view-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Delete button */
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #a71d2a;
+}
+
+/* Optional: subtle shadow */
+.action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+  </style>
+</head>
+<body>
+
+<h2>User Logs</h2>
+<a href="https://geolocation-khgz.onrender.com/logout">Logout</a>
+<table>
+  <thead>
+    <tr>
+      <th>IP</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>Time</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<script>
+async function loadLogs() {
+  const res = await fetch('https://geolocation-khgz.onrender.com/logs');
+  const data = await res.json();
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+
+  data.forEach(log => {
+    const row = document.createElement('tr');
+
+    const mapUrl = `https://www.google.com/maps?q=${log.latitude},${log.longitude}`;
+
+    row.innerHTML = `
+      <td>${log.ip || ''}</td>
+      <td>${log.latitude || ''}</td>
+      <td>${log.longitude || ''}</td>
+      <td>${log.timestamp || ''}</td>
+      <td>
+        <button class="action-btn view-btn" onclick="openMap('${mapUrl}')">View Location</button>
+        <button class="action-btn delete-btn" onclick="deleteLog('${log._id}')">Delete</button>
+      </td>
+    `;
+
+    tbody.appendChild(row);
+  });
+}
+
+function openMap(url) {
+  window.open(url, '_blank');
+}
+
+async function deleteLog(id) {
+  if (!confirm("Delete this record?")) return;
+
+  await fetch(`https://geolocation-khgz.onrender.com/delete/${id}`, { method: 'DELETE' });
+  loadLogs();
+}
+
+// Load on page start
+loadLogs();
+</script>
+
+</body>
+</html>
