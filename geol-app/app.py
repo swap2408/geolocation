@@ -30,7 +30,14 @@ def collect():
 
     # Add extra useful info
     data["timestamp"] = datetime.utcnow()
-    data["ip"] = request.remote_addr
+    forwarded_for = request.headers.get('X-Forwarded-For')
+
+    if forwarded_for:
+      
+        ip = forwarded_for.split(',')[0].strip()
+    else:
+        ip = request.remote_addr
+    data["ip"] = ip
 
     # Insert into MongoDB
     collection.insert_one(data)
