@@ -1,6 +1,21 @@
 from flask import Flask, request, jsonify, send_from_directory
+from pymongo import MongoClient
+from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
+
+# MongoDB connection
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME = os.getenv("DB_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")  # change if using Atlas
+client = MongoClient(MONGO_URI)
+
+db = client[DB_NAME]        # database name
+collection = db[COLLECTION_NAME]      # collection name
 
 @app.route("/")
 def home():
@@ -9,7 +24,19 @@ def home():
 @app.route("/collect", methods=["POST"])
 def collect():
     data = request.json
-    print("User Details:", data)
+
+    if not data:
+        return jsonify({"status": "error", "message": "No data received"}), 400
+
+    # Add extra useful info
+    data["timestamp"] = datetime.utcnow()
+    data["ip"] = request.remote_addr
+
+    # Insert into MongoDB
+    collection.insert_one(data)
+
+    print("Stored User Details:", data)
+
     return jsonify({"status": "success"})
 
 if __name__ == "__main__":
